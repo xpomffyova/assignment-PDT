@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8 />
+<title>A simple map</title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<script src='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.js'></script>
+  <script  src="http://code.jquery.com/jquery-3.1.1.min.js"
+			  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+			  crossorigin="anonymous"></script>
+<link href='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.css' rel='stylesheet' />
+<style>
+  <!-- body { margin:0; padding:0; } -->
+   #map { position:absolute; overflow:hidden;}
+ <!-- #map { position:absolute;
+  margin-left: 190px;
+    border-left: 1px solid gray;
+    padding: 50em;
+    overflow: hidden;}-->
+  
+  div.container {
+    width: 100%;
+    border: 1px solid gray;
+}
+
+header , footer{
+    padding: 1em;
+    color: white;
+    background-color: black;
+    clear: left;
+    text-align: center;
+}
+
+nav {
+    float: left;
+    max-width: 180px;
+    margin: 0;
+    padding: 1em;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+   
+nav ul a {
+    text-decoration: none;
+}
+
+
+
+.legend label,
+.legend span {
+  display:block;
+  float:left;
+  height:15px;
+  width:80%;
+  text-align:center;
+  font-size:9px;
+  color:#808080;
+  }
+</style>
+</head>
+<body>
+
+		<div class="container">
+
+<header>
+   <h1>Welcome to our page!</h1>
+</header>
+  
+<nav>
+  <br>
+    Select to show!
+
+<nav><br>
+      <input id="clickMe" type="button" style="width: 100%;" value="Show all gas stations!" onclick="doFun();" />
+    <br>
+ <select id="nameGS" style="width: 100%;">
+  <option value="SLOVNAFT">SLOVNAFT</option>
+  <option value="OMV">OMV</option>
+  <option value="SHELL">SHELL</option>
+  <option value="JURKI">JURKI</option>
+  <option value="LUKOIL">LUKOIL</option>
+  <option value="GULF">GULF</option>
+  <option value="TESCO">TESCO</option>
+  <option value="LPG">LPG</option>
+  <option value="BENZINOL">BENZINOL</option>
+</select>
+    <br>
+            <input id="selectClick" type="button" style="width: 100%;" value="Show selected!" onclick="doFun3();" />
+</nav>
+<nav>
+    After marking position
+<br>
+      <div id='output' class='ui-control'>
+      Mark your position: <code id='click'></code><br/>
+  Mousemove: <code id='mousemove'></code><br/>
+</div>
+      select prefer type:
+    <br>
+       <select id="nameGS2" style="width: 100%;" >
+  <option value="SLOVNAFT">SLOVNAFT</option>
+  <option value="OMV">OMV</option>
+  <option value="SHELL">SHELL</option>
+  <option value="JURKI">JURKI</option>
+  <option value="LUKOIL">LUKOIL</option>
+  <option value="GULF">GULF</option>
+  <option value="TESCO">TESCO</option>
+  <option value="LPG">LPG</option>
+  <option value="BENZINOL">BENZINOL</option>
+</select>
+    <br>
+      <input id="selectClick2" type="button" style="width: 100%;" value="Show selected!" onclick="doFun4();" />
+    <br><br>
+      <input id="selectClick3" type="button" style="width: 100%;" value="Show without selection!" onclick="doFun2();" />
+    <br><br>
+    <br>
+    Sign biggest distance:
+    <input type="text" style="width: 95%;" id="distance"><br>
+    <input id="selectClick4" type="button" style="width: 100%;" value="Show nearer!" onclick="doFun5();" />
+<br>
+        <input id="selectClick5" type="button" style="width: 100%;" value="Satellite view!" onclick="doFun6();" />
+
+    </nav>
+
+
+</nav>
+<div id='legend' style='display:none;'>
+  <strong>Meanings of colors</strong>
+  <nav class='legend clearfix'>
+    <span style='background:#FFD700;'></span>
+          <label>SLOVNAFT</label>
+
+    <span style='background:#0000CD;'></span>
+          <label>OMV</label>
+
+    <span style='background:#FFA500;'></span>
+          <label>SHELL</label>
+
+    <span style='background:#FFD700;'></span>
+          <label>JURKI</label>
+
+    <span style='background:#FF0000;'></span>
+          <label>LUKOIL</label>
+
+    <span style='background:#D2691E;'></span>
+            <label>GULF</label>
+
+    <span style='background:#6495ED;'></span>
+            <label>TESCO</label>
+
+    <span style='background:#008000;'></span>
+            <label>LPG</label>
+
+    <span style='background:#FF6347;'></span>
+            <label>BENZINOL</label>
+
+    <span style='background:#008080;'></span>
+
+      <label>OTHERS</label>
+      </nav>
+    </div>
+
+  <div id='map'></div>
+
+
+
+</div>
+pp
+
+
+
+
+<script>
+
+
+L.mapbox.accessToken = 'pk.eyJ1IjoibWlydXNrYSIsImEiOiJjaXZyeHZsNTQwMDFpMm9xZG04czlyeGg3In0.9HXCtvXgpkXPfftmCgYlAw';
+var map = L.mapbox.map('map', 'mapbox.streets')
+    .setView([47.5117518,19.847089], 8);
+
+map.legendControl.addLegend(document.getElementById('legend').innerHTML);
+
+var myLayer = L.mapbox.featureLayer()
+.on('ready', function(e){
+    var markers = [];
+    console.log("sme v markeroch");
+    this.eachLayer(function(marker){
+        marker.bindPopup("<p>" + marker.feature.properties.f2 + "</p><p>" +  marker.feature.properties.f3 + "</p>");
+        var nameGS = marker.feature.properties.f2;
+                console.log(nameGS);
+        if(nameGS){
+            nameGS= nameGS.toUpperCase();
+            console.log(nameGS);
+            switch(nameGS){
+            case 'SLOVNAFT':
+                marker.setIcon(L.mapbox.marker.icon({
+                    'marker-color': '#FFD700',
+                    'marker-symbol': "fuel",
+                    'description': "book store"
+                }));
+                break;
+            case 'OMV':
+                marker.setIcon(L.mapbox.marker.icon({
+                    'marker-color': '#0000CD',
+                    'marker-symbol': "fuel",
+                    'description': "book store"
+                }));
+                break;
+            case 'SHELL':
+                marker.setIcon(L.mapbox.marker.icon({
+                    'marker-color': '#FFA500',
+                    'marker-symbol': "library",
+                    'description': "book store"
+                }));
+            case 'JURKI':
+                marker.setIcon(L.mapbox.marker.icon({
+                    'marker-color': '#FFD700',
+                    'marker-symbol': "fuel",
+                    'description': "book store"
+                }));
+                break;
+            case 'LUKOIL':
+                marker.setIcon(L.mapbox.marker.icon({
+                    'marker-color': '#FF0000',
+                    'marker-symbol': "fuel",
+                    'description': "book store"
+                }));
+                break;
+            case 'GULF':
+                marker.setIcon(L.mapbox.marker.icon({
+                    'marker-color': '#D2691E',
+                    'marker-symbol': "fuel",
+                    'description': "book store"
+                }));
+                break;
+            case 'TESCO':
+                marker.setIcon(L.mapbox.marker.icon({
+                    'marker-color': '#6495ED',
+                    'marker-symbol': "fuel",
+                    'description': "book store"
+                }));
+                break;
+            case 'LPG':
+                marker.setIcon(L.mapbox.marker.icon({
+                    'marker-color': '#008000',
+                    'marker-symbol': "fuel",
+                    'description': "book store"
+                }));
+                break;
+            case 'BENZINOL':
+                marker.setIcon(L.mapbox.marker.icon({
+                    'marker-color': '#FF6347',
+                    'marker-symbol': "fuel",
+                    'description': "book store"
+                }));
+                break;
+            default:
+               marker.setIcon(L.mapbox.marker.icon({
+                    'marker-color': '#008080',
+                    'marker-symbol': "fuel",
+                    'description': "book store"
+                }));
+                break;
+            }
+         }else{
+                marker.setIcon(L.mapbox.marker.icon({
+                    'marker-color': '#008080',
+                    'marker-symbol': "fuel",
+                    'description': "book store"
+                }));
+         }
+
+
+
+
+        markers.push(marker);
+
+    });
+
+
+i=0;
+//map.fitBounds(myLayer.getBounds());
+<!--map.setView(markers[i].getLatLng(),12);-->
+<!--markers[i].openPopup(0);-->
+}).addTo(map);
+
+
+
+var click = document.getElementById('click'),
+    mousemove = document.getElementById('mousemove');
+
+var lat = " "
+var lng = " "
+
+    // co pride z vrstvy na mape vybrane
+//var geoJsonLayer = L.mapbox.featureLayer().setGeoJSON()
+  //              .addTo(map);
+
+function doFun(){
+  map.legendControl.addLegend(document.getElementById('legend').innerHTML);
+
+myLayer.loadURL("/select2");
+<!--$.getJSON("/select2", null, function(result){-->
+<!--myLayer.clearLayers();-->
+<!--myLayer.setGeoJSON(result).addTo(map);-->
+<!--map.scrollWheelZoom.disable();-->
+//})
+}
+
+function doFun2(){
+  map.legendControl.addLegend(document.getElementById('legend').innerHTML);
+
+myLayer.loadURL("/select3?lng="+lng+"&lat="+lat);
+
+<!--$.getJSON("/select3", {"lng":lng, "lat":lat}, function(result){-->
+<!--myLayer.clearLayers();-->
+<!--myLayer.setGeoJSON(result).addTo(map);-->
+<!--map.scrollWheelZoom.disable();-->
+console.log("dkdk");
+//})
+}
+
+function doFun3(){
+var e = document.getElementById("nameGS");
+var nameGS = e.options[e.selectedIndex].value;
+myLayer.loadURL("/select4?name="+nameGS);
+//$.getJSON("/select4", {"name":nameGS}, function(result){
+//myLayer.clearLayers();
+//myLayer.setGeoJSON(result).addTo(map);
+//map.scrollWheelZoom.disable();
+console.log("dkdk");
+//})
+}
+
+function doFun4(){
+var e = document.getElementById("nameGS2");
+var nameGS2 = e.options[e.selectedIndex].value;
+myLayer.loadURL("/select5?name="+nameGS2+"&lng="+lng+"&lat="+lat);
+
+}
+
+function doFun5(){
+  map.legendControl.addLegend(document.getElementById('legend').innerHTML);
+
+var e = parseInt(document.getElementById("distance").value);
+var dist = e*1000
+console.log(dist)
+console.log(lng + "loguj" + lat);
+myLayer.loadURL("/select6?dist="+dist+"&lng="+lng+"&lat="+lat);
+}
+
+function doFun6(){
+var map = L.mapbox.map('map', 'mapbox.satellite')
+    .setView([47.9117518,22.647089], 8);}
+
+function doFunction(){
+    console.log("ahoj");
+  //  var temp = geoJsonLayer.loadURL("/select1");
+  var xmlHTTP = ("XMLHttpRequest" in window) ? new XMLHttpRequest() : new ActiveXObject("Msxml3.XMLHTTP");
+  xmlHTTP.open("GET","http://localhost:5000/select2", true);
+  xmlHTTP.onreadystatechange = function() {
+    if (xmlHTTP.readyState == 4)
+    {
+        var serverResponse = xmlHTTP.responseText;
+        console.log(serverResponse);
+       // "{"type":"Point","coordinates":[17.0307634942448,48.4318946707506]}"
+       // L.marker([38.913184, -77.031952]).addTo(map);
+//L.marker([37.775408, -122.413682]).addTo(map);
+//L.marker(serverResponse).addTo(map);
+       // L.mapbox.featureLayer.setGeoJSON(serverResponse).addTo(map);
+//map.scrollWheelZoom.disable();
+
+var myLayer = L.mapbox.featureLayer().setGeoJSON(serverResponse).addTo(map);
+map.scrollWheelZoom.disable();
+    }
+  };
+   xmlHTTP.send(null);
+
+    //console.log(xmlHTTP.responseText);
+}
+
+
+map.on('mousemove click', function(e) {
+    if(e.type === "mousemove") {
+      document.getElementById('mousemove').innerHTML = e.latlng.lat;
+    }
+    else if (e.type === "click") {
+      document.getElementById('click').innerHTML = e.latlng.lat;
+      console.log(e.latlng.lat + " tutu" + e.latlng.lng)
+      lat = e.latlng.lat;
+      lng = e.latlng.lng;
+      doFun2();
+
+    }
+
+    window[e.type].innerHTML = e.containerPoint.toString() + ', ' + e.latlng.toString();
+
+});
+
+
+
+
+</script>
+
+</body>
+</html>
