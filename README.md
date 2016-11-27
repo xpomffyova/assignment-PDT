@@ -25,7 +25,7 @@ You can also mark your position on map and the application will show you 10 near
 
 This is it in action:
 
-![Screenshot](nahlad1.png)
+![Screenshot](nahlad.png)
 
 ![Screenshot](nahlad2.png)
 
