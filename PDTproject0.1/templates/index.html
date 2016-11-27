@@ -112,15 +112,17 @@ nav ul a {
 </select>
     <br>
       <input id="selectClick2" type="button" style="width: 100%;" value="Show selected!" onclick="doFun4();" />
-    <br><br>
+    <br>
       <input id="selectClick3" type="button" style="width: 100%;" value="Show without selection!" onclick="doFun2();" />
     <br><br>
     <br>
     Sign biggest distance:
     <input type="text" style="width: 95%;" id="distance"><br>
     <input id="selectClick4" type="button" style="width: 100%;" value="Show nearer!" onclick="doFun5();" />
-<br>
+<br><br>
         <input id="selectClick5" type="button" style="width: 100%;" value="Satellite view!" onclick="doFun6();" />
+    <br>
+        <input id="selectClick6" type="button" style="width: 100%;" value="Scheme view!" onclick="doFun7();" />
 
     </nav>
 
@@ -176,7 +178,7 @@ pp
 
 
 L.mapbox.accessToken = 'pk.eyJ1IjoibWlydXNrYSIsImEiOiJjaXZyeHZsNTQwMDFpMm9xZG04czlyeGg3In0.9HXCtvXgpkXPfftmCgYlAw';
-var map = L.mapbox.map('map', 'mapbox.streets')
+var map = L.mapbox.map('map')
     .setView([47.5117518,19.847089], 8);
 
 map.legendControl.addLegend(document.getElementById('legend').innerHTML);
@@ -283,7 +285,17 @@ i=0;
 //map.fitBounds(myLayer.getBounds());
 <!--map.setView(markers[i].getLatLng(),12);-->
 <!--markers[i].openPopup(0);-->
-}).addTo(map);
+}).addTo(map).on('mouseover', onClick());;
+
+function onClick(e, lat, lng){
+
+}
+
+var prvystyl='mapbox://styles/mapbox/outdoors-v9';
+var druhystyl='mapbox://styles/mapbox/satellite-v8';
+
+var style=L.mapbox.styleLayer(prvystyl);
+style.addTo(map);
 
 
 
@@ -351,12 +363,19 @@ myLayer.loadURL("/select6?dist="+dist+"&lng="+lng+"&lat="+lat);
 }
 
 function doFun6(){
-var map = L.mapbox.map('map', 'mapbox.satellite')
-    .setView([47.9117518,22.647089], 8);}
+map.removeLayer(style);
+	style=L.mapbox.styleLayer(druhystyl);
+	style.addTo(map);
+}
+
+function doFun7(){
+map.removeLayer(style);
+	style=L.mapbox.styleLayer(prvystyl);
+	style.addTo(map);
+}
 
 function doFunction(){
     console.log("ahoj");
-  //  var temp = geoJsonLayer.loadURL("/select1");
   var xmlHTTP = ("XMLHttpRequest" in window) ? new XMLHttpRequest() : new ActiveXObject("Msxml3.XMLHTTP");
   xmlHTTP.open("GET","http://localhost:5000/select2", true);
   xmlHTTP.onreadystatechange = function() {
@@ -364,12 +383,6 @@ function doFunction(){
     {
         var serverResponse = xmlHTTP.responseText;
         console.log(serverResponse);
-       // "{"type":"Point","coordinates":[17.0307634942448,48.4318946707506]}"
-       // L.marker([38.913184, -77.031952]).addTo(map);
-//L.marker([37.775408, -122.413682]).addTo(map);
-//L.marker(serverResponse).addTo(map);
-       // L.mapbox.featureLayer.setGeoJSON(serverResponse).addTo(map);
-//map.scrollWheelZoom.disable();
 
 var myLayer = L.mapbox.featureLayer().setGeoJSON(serverResponse).addTo(map);
 map.scrollWheelZoom.disable();

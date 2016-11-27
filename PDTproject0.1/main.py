@@ -36,7 +36,7 @@ def select1():
     resp.status_code = 400
     return resp
 
-# zobrazenie vsetkych
+# all gas stations
 @app.route("/select2")
 def select2():
     try:
@@ -49,10 +49,9 @@ def select2():
     for row in rows:
         mystr=row
     resp = json.dumps(mystr)
-#    resp.status_code = 400
     return resp
 
-# hladanie v okoli bodu
+# station around the marked point
 @app.route("/select3")
 def select3():
     try:
@@ -62,21 +61,18 @@ def select3():
     c = con.cursor()
     lat = request.args.get('lat')
     lng = request.args.get('lng')
-   # c.execute("SELECT row_to_json(fc) FROM ( SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features FROM (SELECT 'Feature' As type , ST_AsGeoJSON(ST_Transform(way,4326))::json As geometry, row_to_json((osm_id,brand)) As properties FROM osm_point where (amenity like 'fuel' and brand is not null) ORDER BY (ST_Distance((ST_Transform(ST_GeomFromText('POINT(" + lng + " " + lat + ")',4326),26986),ST_Transform(ST_GeomFromText(ST_AsText(way) ,4326),26986)))) ) As f )  As fc;")
     c.execute("SELECT row_to_json(fc) FROM ( SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features FROM (SELECT 'Feature' As type , ST_AsGeoJSON(ST_Transform(way,4326))::json As geometry, row_to_json((osm_id,brand,(SELECT ST_Distance(ST_Transform(ST_GeomFromText('POINT(" + lng + " " + lat + ")',4326),26986),ST_Transform(way,26986)))/1000)) As properties FROM osm_point where (amenity like 'fuel' and brand is not null) ORDER BY (SELECT ST_Distance(ST_Transform(ST_GeomFromText('POINT(" + lng + " " + lat + ")',4326),26986),ST_Transform(way,26986))) limit 10 ) As f )  As fc;")
     rows = c.fetchall()
-
     for row in rows:
         mystr=row
     resp = json.dumps(mystr)
-#    resp.status_code = 400
     print(resp)
     print("hhhhhhhhhhhh"+ request.args.get('lat'))
     print(request.args.get('lng'))
     s = "ahoj"
     return resp
 
-# hladanie podla znacky
+# station with selected name
 @app.route("/select4")
 def select4():
     try:
@@ -87,7 +83,6 @@ def select4():
     name = request.args.get('name')
     print(name)
    # c.execute("SELECT row_to_json(fc) FROM ( SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features FROM (SELECT 'Feature' As type , ST_AsGeoJSON(ST_Transform(way,4326))::json As geometry, row_to_json((osm_id,brand)) As properties FROM osm_point where (amenity like 'fuel' and brand is not null) ORDER BY (ST_Distance((ST_Transform(ST_GeomFromText('POINT(" + lng + " " + lat + ")',4326),26986),ST_Transform(ST_GeomFromText(ST_AsText(way) ,4326),26986)))) ) As f )  As fc;")
-    #c.execute("SELECT row_to_json(fc) FROM ( SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features FROM (SELECT 'Feature' As type , ST_AsGeoJSON(ST_Transform(way,4326))::json As geometry, row_to_json((osm_id,brand)) As properties FROM osm_point where (amenity like 'fuel' and brand is not null) ORDER BY (SELECT ST_Distance(ST_Transform(ST_GeomFromText('POINT(" + lng + " " + lat + ")',4326),26986),ST_Transform(way,26986))) limit 20 ) As f )  As fc;")
     c.execute("SELECT row_to_json(fc) FROM ( SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features FROM (SELECT 'Feature' As type , ST_AsGeoJSON(ST_Transform(way,4326))::json As geometry, row_to_json((osm_id,brand)) As properties FROM osm_point where amenity like 'fuel' and UPPER(brand) like '"+name+"' ) As f )  As fc;")
 
     rows = c.fetchall()
@@ -99,6 +94,7 @@ def select4():
 
     return resp
 
+#station with selected name and position
 @app.route("/select5")
 def select5():
     try:
@@ -121,7 +117,7 @@ def select5():
 
     return resp
 
-
+# max distance from point
 @app.route("/select6")
 def select6():
     try:
