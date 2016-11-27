@@ -25,7 +25,10 @@ You can also mark your position on map and the application will show you 10 near
 
 This is it in action:
 
-![Screenshot](nahladPDT1.png)
+![Screenshot](nahlad1.png)
+
+![Screenshot](nahlad2.png)
+
 
 The picture shows finding nearest gas stations around Liptovský Mikuláš. Clicked marker shows name of the gas station and its distance from point marked by user.
 
