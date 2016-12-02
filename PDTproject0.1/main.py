@@ -140,6 +140,21 @@ def select6():
     return resp
 
 
+@app.route("/select7")
+def select7():
+    try:
+        con = psycopg2.connect(dbname='osm', host='localhost', port=5432, user='postgres', password='hesielko')
+    except:
+        print("error")
+    c = con.cursor()
+    c.execute("SELECT row_to_json(fc) FROM ( SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features FROM (SELECT 'Feature' As type , ST_AsGeoJSON(ST_Transform(way,4326))::json As geometry, row_to_json((osm_id,name)) As properties FROM osm_point where name like 'Tesla' ) As f )  As fc;")
+    rows = c.fetchall()
+    for row in rows:
+        mystr = row
+    resp = json.dumps(mystr)
+    print(resp)
+    return resp
+
 @app.route("/")
 def hello():
     print("halooo")

@@ -123,7 +123,9 @@ nav ul a {
         <input id="selectClick5" type="button" style="width: 100%;" value="Satellite view!" onclick="doFun6();" />
     <br>
         <input id="selectClick6" type="button" style="width: 100%;" value="Scheme view!" onclick="doFun7();" />
-
+<br>
+          <input id="selectClick7" type="button" style="width: 100%;" value="Show Tesla!" onclick="doFun8();" />
+<br>
     </nav>
 
 
@@ -188,7 +190,7 @@ var myLayer = L.mapbox.featureLayer()
     var markers = [];
     console.log("sme v markeroch");
     this.eachLayer(function(marker){
-        marker.bindPopup("<p>" + marker.feature.properties.f2 + "</p><p>" +  marker.feature.properties.f3 + "</p>");
+        marker.bindPopup("<p>" + marker.feature.properties.f2 + "</p><p>" +  marker.feature.properties.f3 + "km </p>");
         var nameGS = marker.feature.properties.f2;
                 console.log(nameGS);
         if(nameGS){
@@ -254,6 +256,13 @@ var myLayer = L.mapbox.featureLayer()
                 marker.setIcon(L.mapbox.marker.icon({
                     'marker-color': '#FF6347',
                     'marker-symbol': "fuel",
+                    'description': "book store"
+                }));
+                break;
+            case 'TESLA':
+                marker.setIcon(L.mapbox.marker.icon({
+                    'marker-color': '#99CCFF',
+                    'marker-symbol': "car",
                     'description': "book store"
                 }));
                 break;
@@ -370,6 +379,11 @@ map.removeLayer(style);
 	style.addTo(map);
 }
 
+function doFun8(){
+myLayer.loadURL("/select7");
+
+}
+
 function doFunction(){
     console.log("ahoj");
   var xmlHTTP = ("XMLHttpRequest" in window) ? new XMLHttpRequest() : new ActiveXObject("Msxml3.XMLHTTP");
@@ -389,12 +403,22 @@ map.scrollWheelZoom.disable();
     //console.log(xmlHTTP.responseText);
 }
 
+var myposition;
 
 map.on('mousemove click', function(e) {
+
     if(e.type === "mousemove") {
       document.getElementById('mousemove').innerHTML = e.latlng.lat;
     }
     else if (e.type === "click") {
+            if (myposition) map.removeLayer(myposition);
+            myposition = L.marker([e.latlng.lat, e.latlng.lng]).setIcon(L.mapbox.marker.icon({
+                    'marker-color': '#80ffdf',
+                    'marker-symbol': "star-stroked",
+                    'description': "book store"
+                })).addTo(map);
+
+
       document.getElementById('click').innerHTML = e.latlng.lat;
       console.log(e.latlng.lat + " tutu" + e.latlng.lng)
       lat = e.latlng.lat;
