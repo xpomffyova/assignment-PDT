@@ -21,7 +21,7 @@ Build a map-based application, which lets the user see geo-based data on a map a
 Fork this repository and fill in:
 
 **Application description**: `Application shows gas stations in Slovak Republic. You can choose what you want to see. It is possible to find all gas stations or selected type of gas stations, for example: Slovnaft, OMV, LPG, etc. 
-You can also mark your position on map and the application will show you 10 nearest gas stations. There are also possibility to select prefered type of station or biggest distance, which could be between you and station. You can also see a legend with description of colors of markers shown in the map. When you click on the each marker, the type of gas station and distance between you in kilometers will be showen.`
+You can also mark your position on map and the application will show you 10 nearest gas stations. There are also possibility to select prefered type of station or biggest distance, which could be between you and station. You can also see a legend with description of colors of markers shown in the map. When you click on the each marker, the type of gas station and distance between you in kilometers will be showen. The application also shows electrical vehical charging stations.`
 
 This is it in action:
 
